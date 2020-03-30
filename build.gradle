@@ -1,7 +1,5 @@
 plugins {
     id 'org.jetbrains.kotlin.jvm' version "$kotlin_version"
-    id 'org.jetbrains.kotlin.plugin.serialization' version "$kotlin_version"
-    id 'application'
 }
 
 
@@ -9,17 +7,17 @@ group 'com.jetbrains.handson'
 version '1.0-SNAPSHOT'
 
 repositories {
+    jcenter()
     mavenCentral()
 }
 
 dependencies {
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
     implementation "io.ktor:ktor-server-core:$ktor_version"
     implementation "io.ktor:ktor-server-netty:$ktor_version"
+    implementation "io.ktor:ktor-html-builder:$ktor_version"
     implementation "ch.qos.logback:logback-classic:$logback_version"
-    implementation "io.ktor:ktor-serialization:$ktor_version"
-
-    testImplementation "io.ktor:ktor-server-test-host:$ktor_version"
-    testImplementation "org.jetbrains.kotlin:kotlin-test"
+    implementation "io.ktor:ktor-freemarker:$ktor_version"
 }
 
 compileKotlin {
@@ -27,8 +25,4 @@ compileKotlin {
 }
 compileTestKotlin {
     kotlinOptions.jvmTarget = "1.8"
-}
-
-application {
-    mainClassName = 'com.jetbrains.handson.httpapi.ApplicationKt'
 }

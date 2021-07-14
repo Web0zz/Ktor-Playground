@@ -1,6 +1,2 @@
-Learning Http Api creating,
+Creating a WebSocket Chat
 
-What I learned,
--> Routing basics
--> Project Setup
--> Manually/Automated Testing

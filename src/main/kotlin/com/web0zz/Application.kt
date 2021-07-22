@@ -4,7 +4,6 @@ import com.web0zz.auth.JwtConfig
 import com.web0zz.model.userStorage
 import com.web0zz.routing.registerAuthRoutes
 import com.web0zz.routing.registerOrderRoutes
-import com.web0zz.routing.registerUserRoutes
 import io.ktor.application.*
 import io.ktor.auth.*
 import io.ktor.auth.jwt.*
@@ -35,6 +34,5 @@ fun Application.module(testing: Boolean = false) {
         json()
     }
     registerAuthRoutes()
-    registerUserRoutes()
     registerOrderRoutes()
 }

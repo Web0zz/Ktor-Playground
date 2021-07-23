@@ -2,20 +2,22 @@ package com.web0zz.routing
 
 import com.web0zz.auth.JwtConfig
 import com.web0zz.model.User
-import com.web0zz.model.userStorage
 import io.ktor.application.*
 import io.ktor.http.*
 import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.routing.*
+import org.kodein.db.DB
+import org.kodein.db.find
+import org.kodein.db.getById
 
-fun Application.registerAuthRoutes() {
+fun Application.registerAuthRoutes(db: DB) {
     routing {
-        authUser()
+        authUser(db)
     }
 }
 
-fun Route.authUser() {
+fun Route.authUser(db: DB) {
     route("/auth") {
         post("/register") {
             val jwt = JwtConfig.instance
@@ -27,14 +29,14 @@ fun Route.authUser() {
                 )
             }
 
-            if(userStorage.contains(user)) {
+            if(db.getById<User>(user.id) != null) {
                 return@post call.respondText(
                     "User is not available",
                     status = HttpStatusCode.BadRequest
                 )
             }
-            
-            userStorage.add(user)
+
+            db.put(user)
             call.respond(jwt.sign(user.id))
         }
 
@@ -48,7 +50,7 @@ fun Route.authUser() {
                 )
             }
 
-            if(!userStorage.contains(user)) {
+            if(db.getById<User>(user.id) == null) {
                 return@post call.respondText(
                     "User is not available",
                     status = HttpStatusCode.BadRequest

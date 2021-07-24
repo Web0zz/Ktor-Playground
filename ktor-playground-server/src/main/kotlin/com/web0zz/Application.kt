@@ -16,6 +16,7 @@ fun Application.module() {
         webSocket("/chat") {
             println("Adding user!")
             val thisConnection = Connection(this)
+            thisConnection.name = getUsername()
             connections += thisConnection
             try {
                 send("You are connected! There are ${connections.count()} users here.")
@@ -35,4 +36,15 @@ fun Application.module() {
             }
         }
     }
+}
+
+suspend fun WebSocketSession.getUsername(): String {
+    send("Enter Username: ")
+    var username = "0"
+    for(frame in incoming) {
+        frame as? Frame.Text ?: continue
+        username = frame.readText()
+        break
+    }
+    return username
 }

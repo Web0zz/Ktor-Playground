@@ -30,7 +30,4 @@ dependencies {
     implementation("org.kodein.db:kodein-leveldb-jni-jvm-linux:$kodein_version")
     implementation("org.kodein.db:kodein-db:$kodein_version")
     implementation("org.kodein.db:kodein-db-serializer-kotlinx:$kodein_version")
-
-    testImplementation("io.ktor:ktor-server-tests:$ktor_version")
-    testImplementation("org.jetbrains.kotlin:kotlin-test:$kotlin_version")
 }

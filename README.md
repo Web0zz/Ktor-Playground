@@ -1,2 +1,2 @@
-Creating a WebSocket Chat
+WebSocket Chat
 

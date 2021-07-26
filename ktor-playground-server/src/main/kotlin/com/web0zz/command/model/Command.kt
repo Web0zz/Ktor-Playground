@@ -24,5 +24,5 @@ sealed class Command {
     class ToGroup(val sender: Connection, val receiver: List<Connection>, val data: String) : Command()
 
     // Send data to all user
-    class ToAll(val sender: Connection, val receiver: List<Connection>, val data: String) : Command()
+    class ToAll(val sender: Connection, val receiver: MutableSet<Connection>, val data: String) : Command()
 }

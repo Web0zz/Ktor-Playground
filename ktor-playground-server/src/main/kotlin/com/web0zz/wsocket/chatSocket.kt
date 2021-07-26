@@ -1,5 +1,6 @@
 package com.web0zz.wsocket
 
+import com.web0zz.handler.Handler
 import com.web0zz.model.Connection
 import io.ktor.http.cio.websocket.*
 import io.ktor.routing.*
@@ -7,21 +8,33 @@ import io.ktor.websocket.*
 import java.util.*
 import kotlin.collections.LinkedHashSet
 
-fun Routing.chatSocket() {
+fun Routing.chatSocket(handler : Handler) {
+    val connections = Collections.synchronizedSet<Connection?>(LinkedHashSet())
+
     webSocket("/chat") {
-        val connections = Collections.synchronizedSet<Connection?>(LinkedHashSet())
         println("Adding user!")
+
         val thisConnection = Connection(this)
-        thisConnection.name = getUsername()
+        val userInfo = getUsername()
+        thisConnection.name = userInfo.first()
+        thisConnection.group = userInfo[1]
         connections += thisConnection
+
+        /**
+        *  How to use chat?
+        *  to send a private message to someone type: "/w username: your message"
+        *  to send a private message to a group type: "/g GroupName: your message"
+        *  to send a public message to everyone just type your message
+        */
+
         try {
             send("You are connected! There are ${connections.count()} users here.")
             for(frame in incoming) {
                 frame as? Frame.Text ?: continue
-                val receivedText = frame.readText()
-                val textWithUsername = "[${thisConnection.name}]: $receivedText"
-                connections.forEach {
-                    it.session.send(textWithUsername)
+                try {
+                    handler.getFrame(thisConnection,connections,frame)
+                } catch (e: Exception) {
+                    println(e.localizedMessage)
                 }
             }
         } catch (e: Exception) {
@@ -33,13 +46,16 @@ fun Routing.chatSocket() {
     }
 }
 
-suspend fun WebSocketSession.getUsername(): String {
-    send("Enter Username: ")
+suspend fun WebSocketSession.getUsername(): List<String>{
+    send("Enter Username and Group (Username Group): ")
     var username = "0"
+    var group = "1"
     for(frame in incoming) {
         frame as? Frame.Text ?: continue
-        username = frame.readText()
+        val input = frame.readText().split(" ")
+        username = input.first()
+        group = input[1]
         break
     }
-    return username
+    return listOf(username,group)
 }

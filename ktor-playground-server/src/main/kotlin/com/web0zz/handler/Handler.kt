@@ -6,30 +6,25 @@ import io.ktor.http.cio.websocket.*
 
 interface Handler {
     /**
-     * It will get frame and invoke [commandIdentifier]
-     *
-     * If frame not valid it will return false
+     * It will get frame and invoke [parseInput]
      */
-    fun getFrame(sender: Connection, connections: List<Connection>, frame: Frame) : Boolean
+    suspend fun getFrame(sender: Connection, connections: MutableSet<Connection>, frame: Frame.Text)
 
     /**
      * It will parse frame text and invoke [commandIdentifier]
      *
-     * If parsed text not correct return false
+     * If parsed text not correct throw exception
      */
-    fun parseInput(sender: Connection, connections: List<Connection>, text: Frame.Text) : Boolean
-
+    suspend fun parseInput(sender: Connection, connections: MutableSet<Connection>, text: Frame.Text)
     /**
      * It will Identify parsed input and invoke [callCommand]
      *
-     * If command not valid it will return false
+     * If command not valid it will throw exception
      */
-    fun commandIdentifier(sender: Connection, connections: List<Connection>, input: List<String>) : Boolean
+    suspend fun commandIdentifier(sender: Connection, connections: MutableSet<Connection>, input: List<String>)
 
     /**
      * Calls command to invoke
-     *
-     * If command failed it will return false
      */
-    fun callCommand(command: Command) : Boolean
+    suspend fun callCommand(command: Command)
 }

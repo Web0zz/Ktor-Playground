@@ -5,18 +5,15 @@ import com.web0zz.command.model.Command
 import com.web0zz.model.Connection
 import io.ktor.http.cio.websocket.*
 
-object MainHandler: Handler {
-    override fun getFrame(sender: Connection, connections: List<Connection>, frame: Frame) : Boolean =
-        when(frame) {
-            is Frame.Text -> { parseInput(sender, connections, frame) }
-            else -> false
-        }
+class MainHandler: Handler {
+    override suspend fun getFrame(sender: Connection, connections: MutableSet<Connection>, frame: Frame.Text) =
+        parseInput(sender, connections, frame)
 
-    override fun parseInput(sender: Connection, connections: List<Connection>, text: Frame.Text) : Boolean {
+    override suspend fun parseInput(sender: Connection, connections: MutableSet<Connection>, text: Frame.Text) {
         val receivedText = text.readText()
         val receivedTextList = receivedText.split(' ')
 
-        if (receivedText.isEmpty()) return false
+        if (receivedText.isEmpty()) throw (Exception("Text empty"))
 
         if (receivedText.length < 5) {
             return commandIdentifier(sender, connections, listOf("/a", receivedText))
@@ -37,26 +34,25 @@ object MainHandler: Handler {
         }
     }
 
-    override fun commandIdentifier(sender: Connection, connections: List<Connection>, input: List<String>) : Boolean {
+    override suspend fun commandIdentifier(sender: Connection, connections: MutableSet<Connection>, input: List<String>) {
         when(input.first()) {
             "/w" -> {
-                val receiver = connections.find { it.name == input[1] } ?: return false
+                val receiver = connections.find { it.name == input[1] } ?: throw (Exception("/w name find is null ${input[1]} not match"))
                 callCommand(Command.Whisper(sender, receiver, input[2]))
             }
             "/g" -> {
                 val receiver = connections.filter { it.group == input[1] }
-                if (receiver.isNullOrEmpty()) return false
+                if (receiver.isNullOrEmpty()) throw (Exception("/g group list empty"))
                 callCommand(Command.ToGroup(sender, receiver, input[2]))
             }
             "/a" -> {
                 callCommand(Command.ToAll(sender, connections, input[1]))
             }
-            else -> return false
+            else -> throw (Exception("commandIdentifier list error"))
         }
-        return false
     }
 
-    override fun callCommand(command: Command) : Boolean {
+    override suspend fun callCommand(command: Command) {
         return CommandHandler(command).invokeCommend()
     }
 }

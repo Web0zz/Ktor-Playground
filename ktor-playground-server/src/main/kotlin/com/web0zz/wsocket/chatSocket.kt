@@ -20,7 +20,7 @@ fun Routing.chatSocket() {
         thisConnection.name = userInfo.first()
         thisConnection.group = userInfo[1]
         connections += thisConnection
-        send("Welcome, my chat ${thisConnection.name} (${thisConnection.group}")
+        send("Welcome, my chat ${thisConnection.name} (${thisConnection.group})")
 
         /**
         *  How to use chat?

@@ -22,7 +22,6 @@ class CommandHandler(private val command: Command) {
     private suspend fun toGroup(command: Command.ToGroup) {
         val textWithUsername = "[${command.sender.name}]: ${command.data}"
 
-        command.sender.session.send(textWithUsername)
         command.receiver.forEach {
             it.session.send(textWithUsername)
         }
@@ -31,7 +30,6 @@ class CommandHandler(private val command: Command) {
     private suspend fun toAll(command: Command.ToAll) {
         val textWithUsername = "[${command.sender.name}]: ${command.data}"
 
-        command.sender.session.send(textWithUsername)
         command.receiver.forEach {
             it.session.send(textWithUsername)
         }

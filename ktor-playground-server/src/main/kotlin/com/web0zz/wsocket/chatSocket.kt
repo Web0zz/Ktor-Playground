@@ -1,6 +1,6 @@
 package com.web0zz.wsocket
 
-import com.web0zz.handler.Handler
+import com.web0zz.handler.MainHandler
 import com.web0zz.model.Connection
 import io.ktor.http.cio.websocket.*
 import io.ktor.routing.*
@@ -8,8 +8,9 @@ import io.ktor.websocket.*
 import java.util.*
 import kotlin.collections.LinkedHashSet
 
-fun Routing.chatSocket(handler : Handler) {
+fun Routing.chatSocket() {
     val connections = Collections.synchronizedSet<Connection?>(LinkedHashSet())
+    val handler = MainHandler
 
     webSocket("/chat") {
         println("Adding user!")
@@ -19,6 +20,7 @@ fun Routing.chatSocket(handler : Handler) {
         thisConnection.name = userInfo.first()
         thisConnection.group = userInfo[1]
         connections += thisConnection
+        send("Welcome, my chat ${thisConnection.name} (${thisConnection.group}")
 
         /**
         *  How to use chat?

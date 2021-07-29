@@ -5,7 +5,8 @@ import com.web0zz.command.model.Command
 import com.web0zz.model.Connection
 import io.ktor.http.cio.websocket.*
 
-class MainHandler: Handler {
+object MainHandler : Handler {
+
     override suspend fun getFrame(sender: Connection, connections: MutableSet<Connection>, frame: Frame.Text) =
         parseInput(sender, connections, frame)
 
@@ -42,7 +43,7 @@ class MainHandler: Handler {
             }
             "/g" -> {
                 val receiver = connections.filter { it.group == input[1] }
-                if (receiver.isNullOrEmpty()) throw (Exception("/g group list empty"))
+                if (receiver.isEmpty()) throw (Exception("/g group list empty"))
                 callCommand(Command.ToGroup(sender, receiver, input[2]))
             }
             "/a" -> {
@@ -52,7 +53,6 @@ class MainHandler: Handler {
         }
     }
 
-    override suspend fun callCommand(command: Command) {
-        return CommandHandler(command).invokeCommend()
-    }
+    override suspend fun callCommand(command: Command) =
+        CommandHandler(command).invokeCommend()
 }
